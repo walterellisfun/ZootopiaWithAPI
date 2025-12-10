@@ -64,25 +64,31 @@ def get_attribute_string(data, key_path, label, index=None):
     return f"<strong>{label}:</strong> {value}<br/>\n"
 
 
+def serialize_animal(animal_obj):
+    """Serialize a single animal object to an HTML list item."""
+    output = '<li class="cards__item">\n'
+
+    # 1. Handle Name (Title)
+    name = get_value(animal_obj, "name")
+    if name:
+        output += f'  <div class="card__title">{name}</div>\n'
+
+    # 2. Handle Details (Text Body)
+    output += '  <p class="card__text">\n'
+    output += get_attribute_string(animal_obj, "characteristics.diet", "Diet")
+    output += get_attribute_string(animal_obj, "locations", "Location", index=0)
+    output += get_attribute_string(animal_obj, "characteristics.type", "Type")
+    output += '  </p>\n'
+
+    output += '</li>\n'
+    return output
+
+
 def generate_animals_info(animals):
     """Generate an HTML string containing all animal data."""
     output = ""
-    for animal in animals:
-        output += '<li class="cards__item">\n'
-
-        # 1. Handle Name (Title)
-        name = get_value(animal, "name")
-        if name:
-            output += f'  <div class="card__title">{name}</div>\n'
-
-        # 2. Handle Details (Text Body)
-        output += '  <p class="card__text">\n'
-        output += get_attribute_string(animal, "characteristics.diet", "Diet")
-        output += get_attribute_string(animal, "locations", "Location", index=0)
-        output += get_attribute_string(animal, "characteristics.type", "Type")
-        output += '  </p>\n'
-
-        output += '</li>\n'
+    for animal_obj in animals:
+        output += serialize_animal(animal_obj)
     return output
 
 
