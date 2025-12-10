@@ -38,13 +38,13 @@ def get_value(data, target_key):
 
 def get_attribute_string(data, key_path, label, index=None):
     """
-    Navigate a nested data structure and return a formatted string.
+    Navigate a nested data structure and return a formatted HTML string.
 
     :param data: Dictionary to traverse.
     :param key_path: Dot-separated path to the value.
     :param label: Label to print with the value.
     :param index: Optional list index to retrieve.
-    :return: Formatted string (e.g., "Label: Value\n") or empty string.
+    :return: Formatted HTML string (e.g., "Label: Value<br/>\n") or empty.
     """
     value = data
 
@@ -61,18 +61,19 @@ def get_attribute_string(data, key_path, label, index=None):
         else:
             return ""
 
-    return f"{label}: {value}\n"
+    return f"{label}: {value}<br/>\n"
 
 
 def generate_animals_info(animals):
-    """Generate a string containing all animal data."""
+    """Generate an HTML string containing all animal data."""
     output = ""
     for animal in animals:
+        output += '<li class="cards__item">\n'
         output += get_attribute_string(animal, "name", "Name")
         output += get_attribute_string(animal, "characteristics.diet", "Diet")
         output += get_attribute_string(animal, "locations", "Location", index=0)
         output += get_attribute_string(animal, "characteristics.type", "Type")
-        output += "\n"
+        output += '</li>\n'
     return output
 
 
