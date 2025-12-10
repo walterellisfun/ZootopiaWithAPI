@@ -4,7 +4,7 @@ import json
 def load_data(file_path):
     """Safely load JSON data from a file."""
     try:
-        with open(file_path, "r") as handle:
+        with open(file_path, "r", encoding="utf-8") as handle:
             return json.load(handle)
     except (FileNotFoundError, json.JSONDecodeError):
         return []
@@ -13,7 +13,7 @@ def load_data(file_path):
 def read_file(file_path):
     """Read text content from a file."""
     try:
-        with open(file_path, "r") as handle:
+        with open(file_path, "r", encoding="utf-8") as handle:
             return handle.read()
     except FileNotFoundError:
         return ""
@@ -21,7 +21,7 @@ def read_file(file_path):
 
 def write_file(file_path, content):
     """Write text content to a file."""
-    with open(file_path, "w") as handle:
+    with open(file_path, "w", encoding="utf-8") as handle:
         handle.write(content)
 
 
@@ -81,7 +81,14 @@ if __name__ == "__main__":
     animals_data = load_data('animals_data.json')
     template_content = read_file('animals_template.html')
 
+    # 1. Force the HTML to include the charset definition
+    if '<head>' in template_content:
+        template_content = template_content.replace('<head>', '<head>\n<meta charset="utf-8">')
+
+    # 2. Generate animal info
     animals_info = generate_animals_info(animals_data)
+
+    # 3. Replace the placeholder
     new_html = template_content.replace("__REPLACE_ANIMALS_INFO__", animals_info)
 
     write_file('animals.html', new_html)
