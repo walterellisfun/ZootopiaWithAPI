@@ -10,6 +10,21 @@ def load_data(file_path):
         return []
 
 
+def read_file(file_path):
+    """Read text content from a file."""
+    try:
+        with open(file_path, "r") as handle:
+            return handle.read()
+    except FileNotFoundError:
+        return ""
+
+
+def write_file(file_path, content):
+    """Write text content to a file."""
+    with open(file_path, "w") as handle:
+        handle.write(content)
+
+
 def get_value(data, target_key):
     """Retrieve a value from a dictionary ignoring key capitalization."""
     if not isinstance(data, dict):
@@ -21,14 +36,15 @@ def get_value(data, target_key):
     return None
 
 
-def print_attribute(data, key_path, label, index=None):
+def get_attribute_string(data, key_path, label, index=None):
     """
-    Navigate a nested data structure using a dot-path and print the result.
+    Navigate a nested data structure and return a formatted string.
 
     :param data: Dictionary to traverse.
-    :param key_path: Dot-separated path to the value (e.g., "characteristics.diet").
+    :param key_path: Dot-separated path to the value.
     :param label: Label to print with the value.
     :param index: Optional list index to retrieve.
+    :return: Formatted string (e.g., "Label: Value\n") or empty string.
     """
     value = data
 
@@ -36,28 +52,35 @@ def print_attribute(data, key_path, label, index=None):
     for key in key_path.split('.'):
         value = get_value(value, key)
         if not value:
-            return
+            return ""
 
     # Extract list item safely
     if index is not None:
         if isinstance(value, list) and index < len(value):
             value = value[index]
         else:
-            return
+            return ""
 
-    print(f"{label}: {value}")
+    return f"{label}: {value}\n"
 
 
-def print_animal_data(animals_data):
-    """Print name, diet, location, and type for each animal."""
-    for animal in animals_data:
-        print_attribute(animal, "name", "Name")
-        print_attribute(animal, "characteristics.diet", "Diet")
-        print_attribute(animal, "locations", "Location", index=0)
-        print_attribute(animal, "characteristics.type", "Type")
-        print()
+def generate_animals_info(animals):
+    """Generate a string containing all animal data."""
+    output = ""
+    for animal in animals:
+        output += get_attribute_string(animal, "name", "Name")
+        output += get_attribute_string(animal, "characteristics.diet", "Diet")
+        output += get_attribute_string(animal, "locations", "Location", index=0)
+        output += get_attribute_string(animal, "characteristics.type", "Type")
+        output += "\n"
+    return output
 
 
 if __name__ == "__main__":
-    animals = load_data('animals_data.json')
-    print_animal_data(animals)
+    animals_data = load_data('animals_data.json')
+    template_content = read_file('animals_template.html')
+
+    animals_info = generate_animals_info(animals_data)
+    new_html = template_content.replace("__REPLACE_ANIMALS_INFO__", animals_info)
+
+    write_file('animals.html', new_html)
