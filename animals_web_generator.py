@@ -1,12 +1,16 @@
-import json
+import requests
 
 
-def load_data(file_path):
-    """Safely load JSON data from a file."""
-    try:
-        with open(file_path, "r", encoding="utf-8") as handle:
-            return json.load(handle)
-    except (FileNotFoundError, json.JSONDecodeError):
+def get_animals_data(name):
+    """Fetches animals data from the API."""
+    api_url = 'https://api.api-ninjas.com/v1/animals?name={}'.format(name)
+    headers = {'X-Api-Key': 'k3cuX8inqk9Hp7kXnkF8lA==mDvFicylQlqc27WO'}
+
+    response = requests.get(api_url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Error: {response.status_code}")
         return []
 
 
@@ -37,15 +41,7 @@ def get_value(data, target_key):
 
 
 def get_attribute_string(data, key_path, label, index=None):
-    """
-    Navigate a nested data structure and return a formatted HTML string.
-
-    :param data: Dictionary to traverse.
-    :param key_path: Dot-separated path to the value.
-    :param label: Label to print with the value.
-    :param index: Optional list index to retrieve.
-    :return: Formatted HTML string (e.g., "<strong>Label:</strong> Value<br/>\n") or empty.
-    """
+    """Navigate a nested data structure and return a formatted HTML string."""
     value = data
 
     # Traverse dot-path
@@ -93,7 +89,10 @@ def generate_animals_info(animals):
 
 
 if __name__ == "__main__":
-    animals_data = load_data('animals_data.json')
+    # Milestone 1: Hardcoded "Fox" search
+    animal_name = "Fox"
+    animals_data = get_animals_data(animal_name)
+
     template_content = read_file('animals_template.html')
 
     # Force the HTML to include the charset definition
@@ -101,6 +100,8 @@ if __name__ == "__main__":
         template_content = template_content.replace('<head>', '<head>\n<meta charset="utf-8">')
 
     animals_info = generate_animals_info(animals_data)
+    print(animals_info)
     new_html = template_content.replace("__REPLACE_ANIMALS_INFO__", animals_info)
 
     write_file('animals.html', new_html)
+    print(f"Website generated for '{animal_name}'!")
