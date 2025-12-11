@@ -1,17 +1,4 @@
-import requests
-
-
-def get_animals_data(name):
-    """Fetches animals data from the API."""
-    api_url = 'https://api.api-ninjas.com/v1/animals'
-    headers = {'X-Api-Key': 'k3cuX8inqk9Hp7kXnkF8lA==mDvFicylQlqc27WO'}
-
-    response = requests.get(api_url, headers=headers, params={'name': name})
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Error: {response.status_code}")
-        return []
+import data_fetcher
 
 
 def read_file(file_path):
@@ -92,7 +79,8 @@ def generate_animals_info(animals):
 
 if __name__ == "__main__":
     animal_name = input("Enter a name of an animal: ")
-    animals_data = get_animals_data(animal_name)
+
+    animals_data = data_fetcher.fetch_data(animal_name)
 
     template_content = read_file('animals_template.html')
 
@@ -100,12 +88,9 @@ if __name__ == "__main__":
     if '<head>' in template_content:
         template_content = template_content.replace('<head>', '<head>\n<meta charset="utf-8">')
 
-    # Milestone 3: Error handling for non-existent animals
     if not animals_data:
-        # Generate the error message
         result_html = f'<h2>The animal "{animal_name}" doesn\'t exist.</h2>'
     else:
-        # Generate the normal animal cards
         result_html = generate_animals_info(animals_data)
 
     new_html = template_content.replace("__REPLACE_ANIMALS_INFO__", result_html)
