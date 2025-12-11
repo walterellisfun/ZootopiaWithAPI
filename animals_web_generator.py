@@ -1,3 +1,4 @@
+import json
 import requests
 
 
@@ -41,7 +42,9 @@ def get_value(data, target_key):
 
 
 def get_attribute_string(data, key_path, label, index=None):
-    """Navigate a nested data structure and return a formatted HTML string."""
+    """
+    Navigate a nested data structure and return a formatted HTML string.
+    """
     value = data
 
     # Traverse dot-path
@@ -89,8 +92,8 @@ def generate_animals_info(animals):
 
 
 if __name__ == "__main__":
-    # Milestone 1: Hardcoded "Fox" search
-    animal_name = "Fox"
+    # Milestone 2: Ask user for input
+    animal_name = input("Enter a name of an animal: ")
     animals_data = get_animals_data(animal_name)
 
     template_content = read_file('animals_template.html')
@@ -103,4 +106,4 @@ if __name__ == "__main__":
     new_html = template_content.replace("__REPLACE_ANIMALS_INFO__", animals_info)
 
     write_file('animals.html', new_html)
-    print(f"Website generated for '{animal_name}'!")
+    print(f"Website was successfully generated to the file animals.html.")
