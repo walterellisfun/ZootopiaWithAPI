@@ -100,7 +100,6 @@ if __name__ == "__main__":
         template_content = template_content.replace('<head>', '<head>\n<meta charset="utf-8">')
 
     animals_info = generate_animals_info(animals_data)
-    print(animals_info)
     new_html = template_content.replace("__REPLACE_ANIMALS_INFO__", animals_info)
 
     write_file('animals.html', new_html)
