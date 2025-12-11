@@ -1,13 +1,12 @@
-import json
 import requests
 
 
 def get_animals_data(name):
     """Fetches animals data from the API."""
-    api_url = 'https://api.api-ninjas.com/v1/animals?name={}'.format(name)
+    api_url = 'https://api.api-ninjas.com/v1/animals'
     headers = {'X-Api-Key': 'k3cuX8inqk9Hp7kXnkF8lA==mDvFicylQlqc27WO'}
 
-    response = requests.get(api_url, headers=headers)
+    response = requests.get(api_url, headers=headers, params={'name': name})
     if response.status_code == 200:
         return response.json()
     else:
@@ -92,7 +91,6 @@ def generate_animals_info(animals):
 
 
 if __name__ == "__main__":
-    # Milestone 2: Ask user for input
     animal_name = input("Enter a name of an animal: ")
     animals_data = get_animals_data(animal_name)
 
@@ -102,8 +100,15 @@ if __name__ == "__main__":
     if '<head>' in template_content:
         template_content = template_content.replace('<head>', '<head>\n<meta charset="utf-8">')
 
-    animals_info = generate_animals_info(animals_data)
-    new_html = template_content.replace("__REPLACE_ANIMALS_INFO__", animals_info)
+    # Milestone 3: Error handling for non-existent animals
+    if not animals_data:
+        # Generate the error message
+        result_html = f'<h2>The animal "{animal_name}" doesn\'t exist.</h2>'
+    else:
+        # Generate the normal animal cards
+        result_html = generate_animals_info(animals_data)
+
+    new_html = template_content.replace("__REPLACE_ANIMALS_INFO__", result_html)
 
     write_file('animals.html', new_html)
     print(f"Website was successfully generated to the file animals.html.")
