@@ -77,17 +77,40 @@ def generate_animals_info(animals):
     return output
 
 
-if __name__ == "__main__":
-    animal_name = input("Enter a name of an animal: ")
+def filter_animals(animals_data, animal_name):
+    """
+    Filter animals to ensure the name contains the search words as whole words.
+    Prevents partial matches (e.g. 'cat' matching 'Cattle').
+    """
+    filtered_data = []
+    search_words = set(animal_name.lower().split())
 
+    for animal in animals_data:
+        name = get_value(animal, "name")
+        if name:
+            animal_words = set(name.lower().split())
+            if search_words.issubset(animal_words):
+                filtered_data.append(animal)
+
+    return filtered_data
+
+
+if __name__ == "__main__":
+    animal_name = input("Enter a name of an animal: ").strip()
+
+    # 1. Fetch data from API
     animals_data = data_fetcher.fetch_data(animal_name)
 
+    # 2. Apply strict filtering (whole words only)
+    animals_data = filter_animals(animals_data, animal_name)
+
+    # 3. Read template
     template_content = read_file('animals_template.html')
 
-    # Force the HTML to include the charset definition
     if '<head>' in template_content:
         template_content = template_content.replace('<head>', '<head>\n<meta charset="utf-8">')
 
+    # 4. Generate HTML
     if not animals_data:
         result_html = f'<h2>The animal "{animal_name}" doesn\'t exist.</h2>'
     else:
